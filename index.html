@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Estratégica — Cátedra Lic. Prof. Emanuel Italiano</title>
+    
+    <!-- Tailwind CSS para diseño profesional -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para gráficos dinámicos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Fuentes tipográficas de alta gama -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX para renderizado matemático profesional -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+    <style>
+        :root {
+            --bg-natural: #F8FAFC; /* Fondo claro, aireado, inspirado en cielos limpios */
+            --bg-card: rgba(255, 255, 255, 0.75); /* Vidrio esmerilado ultra pulido y luminoso */
+            --text-main: #0F172A; /* Slate oscuro para máxima legibilidad y descanso visual */
+            --text-muted: #475569;
+            --accent-teal: #0D9488; /* Turquesa del cielo de Fuerza Natural */
+            --accent-gold: #D97706; /* Sol radiante y viento del desierto */
+            --accent-emerald: #059669; /* Verdes de la tierra mendocina */
+            --border-soft: rgba(15, 23, 42, 0.08);
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-natural);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(13, 148, 136, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.08) 0px, transparent 50%);
+            color: var(--text-main);
+            scroll-behavior: smooth;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.05);
+        }
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tab-btn.active {
+            color: var(--accent-teal);
+            font-weight: 600;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-teal), var(--accent-gold));
+            border-radius: 9999px;
+        }
+        /* Custom scrollbar para estética luminosa y espaciosa */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 6px;
+            border: 2px solid #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-teal);
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900">
+
+<!-- Barra de Navegación Académica Luminosa -->
+<nav class="sticky top-0 z-50 glass-card px-8 py-5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200/50">
+    <div class="flex flex-col">
+        <span class="text-[10px] uppercase tracking-widest text-teal-700 font-bold bg-teal-50 px-2.5 py-1 rounded-md w-fit">Cátedra de Administración y Planificación</span>
+        <span class="text-xl font-bold text-slate-900 tracking-tight mt-1.5 flex items-center gap-2">
+            Lic. Prof. Emanuel Italiano
+            <span class="h-2 w-2 rounded-full bg-teal-500 animate-pulse"></span>
+        </span>
+    </div>
+    <div class="flex flex-wrap justify-center gap-2 md:gap-4 text-sm font-semibold">
+        <button onclick="switchTab('inicio')" id="nav-inicio" class="tab-btn px-3 py-2 text-slate-500 hover:text-teal-600 transition">Inicio</button>
+        <button onclick="switchTab('lectura')" id="nav-lectura" class="tab-btn px-3 py-2 text-slate-500 hover:text-teal-600 transition">Guía de Estudio</button>
+        <button onclick="switchTab('casos')" id="nav-casos" class="tab-btn px-3 py-2 text-slate-500 hover:text-teal-600 transition">Casos Clínicos</button>
+        <button onclick="switchTab('taller')" id="nav-taller" class="tab-btn px-3 py-2 text-slate-500 hover:text-teal-600 transition">Taller Cascada</button>
+        <button onclick="switchTab('leancanvas')" id="nav-leancanvas" class="tab-btn px-3 py-2 text-slate-500 hover:text-teal-600 transition">Lean Canvas</button>
+        <button onclick="switchTab('metricas')" id="nav-metricas" class="tab-btn px-3 py-2 text-slate-500 hover:text-teal-600 transition">Visualizaciones</button>
+    </div>
+</nav>
+
+<!-- CONTENEDOR PRINCIPAL CON MAYOR MARGEN Y DISTANCIAMIENTO -->
+<main class="flex-grow container mx-auto px-6 py-12 max-w-6xl space-y-16">
+
+    <!-- SECCIÓN 1: INICIO (HOME) -->
+    <section id="sec-inicio" class="tab-content block space-y-16 animate-fadeIn">
+        <div class="text-center py-24 bg-gradient-to-b from-teal-50/50 via-white to-transparent rounded-3xl p-10 border border-teal-100/50 relative overflow-hidden shadow-sm">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-teal-200/15 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-amber-200/10 rounded-full blur-3xl"></div>
+
+            <p class="text-teal-600 font-bold tracking-widest uppercase mb-5 text-[11px] bg-teal-50 px-3.5 py-1.5 rounded-full w-fit mx-auto border border-teal-100">Innovación Estratégica en el Aula</p>
+            <h1 class="text-6xl md:text-8xl font-black text-slate-900 tracking-tight mb-8 leading-none">Del Sueño a la Acción</h1>
+            <p class="text-3xl text-teal-700 font-light italic max-w-2xl mx-auto mb-10 font-serif">"Mereces lo que sueñas"</p>
+            <div class="h-1.5 w-32 bg-gradient-to-r from-teal-400 to-amber-500 mx-auto mb-10 rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed font-light">
+                Bienvenidos al espacio de aprendizaje interactivo y tecnológico de nuestra cátedra. Aquí deconstruimos los sueños organizacionales transformándolos en herramientas cuantitativas y planificaciones rigurosas de gran alcance territorial.
+            </p>
+            <div class="mt-12 flex flex-wrap justify-center gap-4">
+                <button onclick="switchTab('lectura')" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-8 py-4 rounded-2xl transition-all shadow-md hover:shadow-teal-600/15">Explorar Contenidos</button>
+                <button onclick="switchTab('taller')" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-8 py-4 rounded-2xl transition-all border border-slate-200 shadow-sm">Ir al Planificador</button>
+            </div>
+        </div>
+
+        <!-- Citas Inspiradoras e Integración QR -->
+        <div class="grid md:grid-cols-3 gap-8 items-stretch">
+            <div class="glass-card p-10 rounded-3xl flex flex-col justify-between border-t-4 border-teal-500 hover:translate-y-[-4px] transition duration-300">
+                <div>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest block mb-5">Ancla Cultural</span>
+                    <p class="text-lg italic text-slate-700 mb-8 font-serif leading-relaxed">
+                        "La planificación estratégica en cualquier organización no comienza con una planilla de cálculo, un algoritmo de control o un presupuesto. Comienza con una capacidad humana fundamental y disruptiva: la capacidad de soñar. Pero para soñar en grande y con sentido, hay que estudiar."
+                    </p>
+                </div>
+                <div class="border-t border-slate-100 pt-5 mt-5">
+                    <p class="font-bold text-slate-900 text-sm">Gustavo Cerati</p>
+                    <p class="text-xs text-teal-600">Bocanada (1999) — "Beautiful"</p>
+                </div>
+            </div>
+            
+            <div class="glass-card p-10 rounded-3xl flex flex-col justify-between border-t-4 border-amber-500 hover:translate-y-[-4px] transition duration-300">
+                <div>
+                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-widest block mb-5">Perspectiva Productiva</span>
+                    <p class="text-lg italic text-slate-700 mb-8 font-serif leading-relaxed">
+                        "Hoy en día se puede hacer producción sin capital, sin maquinaria e incluso sin tierra propia mediante arrendamiento... Pero hay algo con lo que no podés dejar de contar: el conocimiento."
+                    </p>
+                </div>
+                <div class="border-t border-slate-100 pt-5 mt-5">
+                    <p class="font-bold text-slate-900 text-sm">Gustavo Grobocopatel</p>
+                    <p class="text-xs text-amber-600">Fundador del Grupo Los Grobo — El "Estrategiar" en Red</p>
+                </div>
+            </div>
+
+            <!-- CARD QR CODE INTERACTIVO -->
+            <div class="glass-card p-8 rounded-3xl flex flex-col justify-between items-center text-center border-t-4 border-emerald-500 bg-emerald-50/20 hover:translate-y-[-4px] transition duration-300">
+                <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-widest block mb-3">Escanea y Comparte</span>
+                <p class="text-xs text-slate-500 mb-5 leading-relaxed">Escanea el código QR con tu celular para abrir este taller en tu pantalla al instante e interactuar de forma táctil.</p>
+                
+                <div class="bg-white p-4 rounded-2xl mb-5 shadow-sm border border-slate-100">
+                    <img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://emanuelitaliano.github.io/planificacion" alt="Código QR del Taller" class="w-28 h-28">
+                </div>
+
+                <div class="w-full">
+                    <input type="text" id="qr-url-input" oninput="updateQR()" placeholder="URL personalizada de clase" class="w-full text-center text-xs p-3 bg-white border border-slate-200 rounded-xl text-emerald-700 font-medium focus:outline-none focus:border-emerald-500 transition shadow-inner">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 2: GUÍA DE ESTUDIO COMPLETA (TEXTO EXTENSO) -->
+    <section id="sec-lectura" class="tab-content hidden space-y-12 animate-fadeIn">
+        <div class="border-b border-slate-200 pb-5">
+            <h2 class="text-4xl font-bold text-slate-900">Material de Estudio Formal</h2>
+            <p class="text-slate-500 mt-1">Estructura conceptual y marcos de referencia teóricos de la cátedra.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-12">
+            <!-- Menú Lateral de Lectura -->
+            <div class="lg:col-span-1 space-y-2 sticky top-24 h-fit">
+                <button onclick="scrollToId('lectura-1')" class="w-full text-left p-3.5 rounded-xl hover:bg-teal-50 text-slate-600 font-medium transition block border-l-2 border-transparent hover:border-teal-500 text-sm">1. La Visión Organizacional</button>
+                <button onclick="scrollToId('lectura-2')" class="w-full text-left p-3.5 rounded-xl hover:bg-teal-50 text-slate-600 font-medium transition block border-l-2 border-transparent hover:border-teal-500 text-sm">2. El Puente de Grobocopatel</button>
+                <button onclick="scrollToId('lectura-3')" class="w-full text-left p-3.5 rounded-xl hover:bg-teal-50 text-slate-600 font-medium transition block border-l-2 border-transparent hover:border-teal-500 text-sm">3. Los Objetivos Técnicos</button>
+                <button onclick="scrollToId('lectura-4')" class="w-full text-left p-3.5 rounded-xl hover:bg-teal-50 text-slate-600 font-medium transition block border-l-2 border-transparent hover:border-teal-500 text-sm">4. Cascada Estratégica</button>
+            </div>
+
+            <!-- Contenido del Documento de Lectura -->
+            <div class="lg:col-span-3 space-y-16 bg-white p-10 md:p-14 rounded-3xl border border-slate-100 shadow-sm max-h-[80vh] overflow-y-auto pr-6">
+                
+                <!-- Parte 1 -->
+                <div id="lectura-1" class="space-y-6">
+                    <h3 class="text-3xl font-bold text-teal-700 border-b border-slate-100 pb-3 font-serif">1. La Visión Organizacional: El Horizonte Inteligente</h3>
+                    <p class="leading-relaxed text-slate-600 font-light text-base">
+                        Desde la perspectiva clásica de la administración de empresas, la <strong>Visión</strong> se define como un enunciado proyectivo a largo plazo que describe el estado futuro ideal, inspirador y deseable de una organización. No se limita a describir lo que la organización es hoy (esa es la tarea de la Misión), sino lo que está llamada a ser en un horizonte de tiempo de $5$ a $10$ años.
+                    </p>
+                    <div class="bg-teal-50/40 border-l-4 border-teal-500 p-8 rounded-r-2xl italic my-6">
+                        <p class="font-bold text-teal-800 mb-2 text-xs uppercase tracking-wider">Definición Clásica:</p>
+                        <p class="text-slate-700 font-serif leading-relaxed text-base">"La visión estratégica es un mapa del futuro de la empresa que proporciona detalles específicos sobre la tecnología, el enfoque en el cliente, la geografía y las capacidades que se planean desarrollar, el tipo de empresa que la gerencia intenta crear y las competencias que acumulará." (Thompson, Peteraf, Gamble & Strickland, 2012).</p>
+                    </div>
+                    <p class="leading-relaxed text-slate-600 font-light text-base">
+                        Para George Steiner (1979), pionero de la planificación, la visión constituye el "diseño del futuro deseado", el cual debe actuar como una fuerza tractora que guíe las decisiones complejas del presente. La tesis central de nuestra cátedra plantea que la visión es, en esencia, **el sueño intelectualizado y estructurado de sus líderes**.
+                    </p>
+                </div>
+
+                <!-- Parte 2 -->
+                <div id="lectura-2" class="space-y-6">
+                    <h3 class="text-3xl font-bold text-teal-700 border-b border-slate-100 pb-3 font-serif">2. El Puente hacia la Realidad: Gustavo Grobocopatel</h3>
+                    <p class="leading-relaxed text-slate-600 font-light text-base">
+                        Como señala el ingeniero agrónomo y líder del agronegocio argentino <strong>Gustavo Grobocopatel</strong>, una visión que no se traduce en un plan de acción riguroso no es más que una alucinación estéril. El verdadero desafío administrativo consiste en pasar de la "estrategia" (como sustantivo estático) al acto continuo de <strong>"estrategiar"</strong> (como un verbo dinámico de adaptación ininterrumpida al entorno cambiante).
+                    </p>
+                    <div class="bg-slate-50 border border-slate-100 p-8 rounded-2xl my-6">
+                        <p class="text-slate-700 italic leading-relaxed font-serif text-base">
+                            "Hoy en día se puede hacer producción sin capital porque el mercado te lo presta si el proyecto es sólido. Se puede hacer producción sin maquinaria porque se puede tercerizar de forma eficiente. Se puede producir incluso sin tierra propia mediante arrendamiento estratégico. Es decir, podés construir valor sin los factores clásicos de la economía tradicional. Pero hay algo con lo que no podés dejar de contar bajo ninguna circunstancia: el <strong>conocimiento</strong>." (Grobocopatel, 2024).
+                        </p>
+                    </div>
+                    <p class="leading-relaxed text-slate-600 font-light text-base">
+                        La visión determina de manera nítida hacia <strong>dónde queremos ir</strong>, pero para que ese sueño rompa el plano mental y pise la tierra de los de negocios, resulta indispensable construir una arquitectura de objetivos sólidos.
+                    </p>
+                </div>
+
+                <!-- Parte 3 -->
+                <div id="lectura-3" class="space-y-6">
+                    <h3 class="text-3xl font-bold text-teal-700 border-b border-slate-100 pb-3 font-serif">3. Los Objetivos: Los Pilares de la Estrategia</h3>
+                    <p class="leading-relaxed text-slate-600 font-light text-base">
+                        Si la visión se proyecciona en el horizonte distante, **los objetivos tienen los pies firmemente plantados en el presente con la mirada dirigida al futuro cercano**. Son las columnas de apoyo del plan de negocios.
+                    </p>
+                    <div class="bg-teal-50/40 border-l-4 border-teal-500 p-8 rounded-r-2xl italic my-6">
+                        <p class="font-bold text-teal-800 mb-2 text-xs uppercase tracking-wider">Definición de Peter Drucker (1954):</p>
+                        <p class="text-slate-700 font-serif leading-relaxed text-base">"Los objetivos son la base misma de la gestión de cualquier empresa. No son el punto de partida del trabajo, sino su resultado final. Deben guiar el comportamiento diario de los gerentes y empleados, determinando la asignación real de recursos y permitiendo evaluar la efectividad real de la organización." (Drucker, 1954).</p>
+                    </div>
+                    <p class="leading-relaxed text-slate-600 font-light text-base">
+                        Para que un objetivo sea técnicamente robusto y escape de la simple "buena intención", la cátedra exige el cumplimiento estricto del estándar **S.M.A.R.T.** (Doran, 1981):
+                    </p>
+                    <ul class="list-disc pl-6 space-y-3 text-slate-600 font-light text-base">
+                        <li><strong>Specific (Específico):</strong> Redacción clara que inicia con verbo en infinitivo ($Ej: Incrementar, Reducir, Consolidar$).</li>
+                        <li><strong>Measurable (Medible):</strong> Debe asociar un indicador cuantitativo o porcentaje observable.</li>
+                        <li><strong>Achievable (Realizable):</strong> Desafiante pero viable con los recursos y capital humano disponibles.</li>
+                        <li><strong>Relevant (Relevante):</strong> Alineado de manera directa a la visión organizacional y de marca.</li>
+                        <li><strong>Time-bound (Temporizado):</strong> Con una fecha límite explícita para su consecución.</li>
+                    </ul>
+                </div>
+
+                <!-- Parte 4 -->
+                <div id="lectura-4" class="space-y-6">
+                    <h3 class="text-3xl font-bold text-teal-700 border-b border-slate-100 pb-3 font-serif">4. La Cascada Estratégica: Coherencia Fractal</h3>
+                    <p class="leading-relaxed text-slate-600 font-light text-base">
+                        Para el trabajo práctico final de esta cátedra, utilizaremos un modelo de cascada descendente de planificación. Este diseño asegura una **coherencia fractal** dentro de la organización: garantiza que la actividad cotidiana más pequeña realizada por un operario o administrativo esté conectada de forma directa con la gran visión inspiradora de los fundadores.
+                    </p>
+                    <p class="leading-relaxed text-slate-300">
+                        La matriz de planificación que cada grupo debe construir debe cumplir estrictamente con la siguiente ramificación matemática:
+                    </p>
+                    <div class="bg-slate-900 text-emerald-400 p-8 rounded-2xl font-mono text-sm space-y-3 border border-slate-800 shadow-inner">
+                        <p class="text-amber-400 font-bold">// ESTRUCTURA DEL ENTREGABLE OBLIGATORIO:</p>
+                        <p>• 1 Declaración de Visión General</p>
+                        <p>• 3 Objetivos Estratégicos (Norma SMART)</p>
+                        <p>• 9 Metas temporales (3 por cada Objetivo)</p>
+                        <p>• 27 Actividades de campo (3 por cada Meta)</p>
+                        <p>• 54 Indicadores cuantitativos (2 por cada Actividad)</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 3: CASOS DE ESTUDIO (DETALLE COMPLETO) -->
+    <section id="sec-casos" class="tab-content hidden space-y-12 animate-fadeIn">
+        <div class="border-b border-slate-200 pb-5">
+            <h2 class="text-4xl font-bold text-slate-900">Casos Clínicos de Estudio</h2>
+            <p class="text-slate-500 mt-1">Modelos de negocio disruptivos analizados bajo la metodología de la cátedra.</p>
+        </div>
+
+        <div class="flex justify-center space-x-2 border-b border-slate-200">
+            <button onclick="switchCaso('toyota')" id="btn-c-toyota" class="caso-tab-btn py-4 px-8 border-b-2 border-transparent hover:text-teal-600 font-semibold transition active text-slate-500">Caso A: Toyota</button>
+            <button onclick="switchCaso('apple')" id="btn-c-apple" class="caso-tab-btn py-4 px-8 border-b-2 border-transparent hover:text-teal-600 font-semibold transition text-slate-500">Caso B: Apple</button>
+            <button onclick="switchCaso('entredos')" id="btn-c-entredos" class="caso-tab-btn py-4 px-8 border-b-2 border-transparent hover:text-teal-600 font-semibold transition text-slate-500">Caso C: Entre Dos</button>
+        </div>
+
+        <!-- Contenido de los Casos -->
+        <div class="bg-white p-10 md:p-14 rounded-3xl border border-slate-100 shadow-sm leading-relaxed text-slate-600 font-light space-y-8">
+            
+            <!-- CASO TOYOTA -->
+            <div id="caso-toyota" class="caso-content space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-5">
+                    <div>
+                        <h3 class="text-3xl font-serif font-bold text-teal-700">Toyota: La Visión de 100 Años</h3>
+                        <p class="text-sm uppercase tracking-wider text-amber-600 font-semibold">Ikigai, Monozukuri y la Mecánica del Kaizen</p>
+                    </div>
+                    <span class="bg-teal-50 text-teal-700 border border-teal-100 font-semibold px-4 py-1.5 rounded-full text-xs uppercase tracking-wider">Estilo Nipón</span>
+                </div>
+                
+                <p class="text-base">
+                    A diferencia del <em>management</em> occidental, donde los planes se diseñan para horizontes muy cortos (normalmente $3$ a $5$ años) forzados a satisfacer reportes de ganancias corporativas inmediatos, las corporaciones japonesas tradicionales diseñan su visión a plazos de $20$, $50$ o incluso $100$ años. Esta mirada descansa sobre conceptos identitarios profundos:
+                </p>
+                <ul class="list-disc pl-6 space-y-3 text-base">
+                    <li><strong>Ikigai (Propósito Trascendente):</strong> La razón de ser de la empresa es el servicio ético y sostenible a la sociedad. El dinero y las ganancias son concebidos como el combustible básico para sostener ese propósito.</li>
+                    <li><strong>Monozukuri (Hacer con el Alma):</strong> Fusión de la mente, el espíritu y la destreza técnica, donde cada producto se elabora con devoción absoluta e impecabilidad.</li>
+                    <li><strong>Seishin (Juventud Corporativa):</strong> Concepción que dicta que una empresa no supera su etapa de "adolescencia estructural" hasta cumplir sus primeros $20$ años de vida. Solo tras este periodo se considera lista para el verdadero Kaizen continuo.</li>
+                </ul>
+
+                <h4 class="text-xl font-bold text-slate-900 mt-8">La Historia de Sakichi y Kiichiro Toyoda</h4>
+                <p class="text-base">
+                    El origen de la marca está teñido de altruismo y empatía familiar. **Sakichi Toyoda (1867-1930)** inventó el primer telar automático de Japón guiado por el dolor de ver a su madre, Toyo, desgastarse físicamente operando un telar manual tradicional de madera. En $1924$, dio vida a su invento cumbre: si un hilo se cortaba, la máquina se detenía de inmediato. Este hito dio luz al concepto de **Jidoka** (automatización con rostro humano).
+                </p>
+                <p class="text-base">
+                    En su lecho de muerte, Sakichi legó las $100.000$ libras esterlinas ganadas por vender las patentes de este telar a su hijo, **Kiichiro Toyoda**, exigiéndole fundar la división automotriz de la nación. Kiichiro viajó a Detroit, desarmó motores Ford y en $1937$ fundó Toyota Motor Corporation, aplicando el concepto del misticismo del número **8** (trazos requeridos en silabario japonés para escribir "Toyota", símbolo de prosperidad infinita).
+                </p>
+                <p class="text-xs text-slate-400 italic">Fuentes: Toyota Motor Corporation Global Website (2021) / Six Sigma International (2014).</p>
+            </div>
+
+            <!-- CASO APPLE -->
+            <div id="caso-apple" class="caso-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-5">
+                    <div>
+                        <h3 class="text-3xl font-serif font-bold text-teal-700">Apple: La Bicicleta para la Mente</h3>
+                        <p class="text-sm uppercase tracking-wider text-amber-600 font-semibold">Del Producto Tecnológico al Sistema de Valores "Think Different"</p>
+                    </div>
+                    <span class="bg-amber-50 text-amber-700 border border-amber-100 font-semibold px-4 py-1.5 rounded-full text-xs uppercase tracking-wider">Estilo Disruptivo</span>
+                </div>
+
+                <p class="text-base">
+                    En la década de $1970$, las computadoras eran percibidas como máquinas áridas, frías e inaccesibles, controladas únicamente por ejércitos de burócratas o grandes corporaciones. La visión fundacional de **Steve Jobs y Steve Wozniak** fue descentralizar ese poder y ponerlo al servicio de la capacidad individual.
+                </p>
+                <p class="text-base">
+                    Jobs basó su visión en un estudio científico que leyó de niño en la revista <em>Scientific American</em> (1973): el ser humano montando una **bicicleta** superaba en eficiencia de locomoción a todas las especies del planeta. Jobs concluyó que la computadora personal debía ser una **"bicicleta para la mente"**, una herramienta que multiplicara exponencialmente la cognición y creatividad del individuo de a pie.
+                </p>
+
+                <h4 class="text-xl font-bold text-slate-900 mt-8">La Desviación y la Vuelta a los Valores: Think Different (1997)</h4>
+                <p class="text-base">
+                    Tras la expulsión de Jobs en $1985$, Apple cayó en una crisis que casi la lleva a la quiebra en $1997$. Al centrarse en métricas técnicas banales (megahertz, velocidades, precios y competencia directa con IBM), la marca olvidó su visión original. A su regreso, Jobs reorganizó la estrategia y lanzó junto a TBWA\Chiat\Day la icónica campaña de branding institucional **"Think Different"**:
+                </p>
+                <div class="bg-teal-50/40 p-8 rounded-2xl italic border-l-4 border-teal-500 font-serif my-6 text-slate-800 text-lg leading-relaxed shadow-sm">
+                    "Esto es para los locos. Los inadaptados. Los rebeldes. Los alborotadores... La gente que está lo suficientemente loca como para pensar que puede cambiar el mundo es quien lo hace."
+                </div>
+                <p class="text-base">
+                    "Think Different" rescató la visión original: el marketing y la empresa no se tratan de características técnicas, se tratan de **valores profundos** y de creer en el potencial creativo de la humanidad.
+                </p>
+                <p class="text-xs text-slate-400 italic">Fuentes: Steve Jobs (Conferencia Interna Apple, 1997) / Isaacson, W. (2011).</p>
+            </div>
+
+            <!-- CASO ENTRE DOS -->
+            <div id="caso-entredos" class="caso-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-5">
+                    <div>
+                        <h3 class="text-3xl font-serif font-bold text-teal-700">Entre Dos: Pasión y Prestigio Mendocino</h3>
+                        <p class="text-sm uppercase tracking-wider text-amber-600 font-semibold">De una Única Cacerola en Casa a 14 Millones de Alfajores</p>
+                    </div>
+                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold px-4 py-1.5 rounded-full text-xs uppercase tracking-wider">Estilo Local</span>
+                </div>
+
+                <p class="text-base">
+                    El caso de la marca mendocina **Entre Dos** demuestra que la formulación de visiones y la asunción de riesgos estratégicos no son patrimonio exclusivo de corporaciones globales de Silicon Valley. El matrimonio integrado por **Ariel Fabrizio y Constanza Carcaño** dio inicio a este sueño en el año $2008$, apretados por la necesidad económica familiar.
+                </p>
+                <p class="text-base">
+                    En la primera fase de supervivencia, el nivel de disciplina material era asombroso: **debían cocinar todas sus comidas familiares en una única cacerola para evitar prender el horno de la cocina**. Si el horno de la casa se utilizaba para cocinar carnes, el olor y la grasa impregnaban el aire y arruinaban el perfil sensorial de las masas de los alfajores que Constanza formulaba rigurosamente bajo su saber como Bromatóloga.
+                </p>
+
+                <h4 class="text-xl font-bold text-slate-900 mt-8">El Salto de Fe y la Evolución de la Visión</h4>
+                <p class="text-base">
+                    En $2011$ dejaron sus empleos formales, y en $2013$ tomaron la decisión más arriesgada de sus vidas: **vendieron su única casa familiar para comprar un terreno semi-rural en Blanco Encalada (Luján de Cuyo)**. En aquel momento la zona carecía de tendido eléctrico estable y asfalto, abriendo caminos en medio de la precariedad de la montaña. Hoy la marca produce más de $14$ millones de alfajores anuales con más de $40$ puntos de franquicias.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                    <div class="p-8 bg-teal-50/25 rounded-2xl border border-teal-100 shadow-sm">
+                        <h5 class="font-bold text-teal-700 text-xs uppercase tracking-wider mb-3">Visión Inicial (2008)</h5>
+                        <p class="text-sm italic text-slate-600 leading-relaxed">"Convertirnos en un emprendimiento familiar sustentable que comercialice el alfajor artesanal de mayor calidad de Luján de Cuyo, garantizando ingresos dignos para nuestro hogar."</p>
+                    </div>
+                    <div class="p-8 bg-amber-50/25 rounded-2xl border border-amber-100 shadow-sm">
+                        <h5 class="font-bold text-amber-700 text-xs uppercase tracking-wider mb-3">Visión Actual (Proyección 2026+)</h5>
+                        <p class="text-sm italic text-slate-600 leading-relaxed">"Consolidar a Entre Dos como la marca premium y de prestigio indiscutido de pastelería artesanal de Argentina, expandiendo una red federal e internacional de cafeterías de montaña y franquicias urbanas, asumiendo un compromiso ético activo con el bienestar animal y la comunidad."</p>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 italic mt-4">Fuentes: Diario Uno (2022) / Los Andes (2018) / Cadena 3 (2026).</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECCIÓN 4: TALLER INTERACTIVO (PLANIFICADOR CASCADA) -->
+    <section id="sec-taller" class="tab-content hidden space-y-12 animate-fadeIn">
+        <div class="border-b border-slate-200 pb-5">
+            <h2 class="text-4xl font-bold text-slate-900">Taller Planificador Cascada</h2>
+            <p class="text-slate-500 mt-1">Construye y valida paso a paso la estructura piramidal clásica de tu proyecto de cátedra.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-12">
+            <!-- Formulario de Entrada (2 Columnas) -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Fase 1: Visión -->
+                <div class="bg-white p-8 md:p-10 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <span class="w-10 h-10 rounded-2xl bg-teal-600 text-white font-bold flex items-center justify-center text-sm shadow-md shadow-teal-600/10">1</span>
+                        <h3 class="text-lg font-bold text-slate-900 uppercase tracking-widest">Paso 1: Define tu Visión</h3>
+                    </div>
+                    <p class="text-xs text-slate-500">Recuerda: Es el sueño inteligente a largo plazo ($5$ a $10$ años). Debe ser inspirador pero con sustento real y fundamentación intelectual.</p>
+                    <textarea id="inp-vision" rows="3" placeholder="Escribe aquí la Visión de tu proyecto..." class="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:outline-none text-slate-800 font-serif italic text-base transition"></textarea>
+                </div>
+
+                <!-- Fase 2: Objetivos SMART -->
+                <div class="bg-white p-8 md:p-10 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+                    <div class="flex items-center space-x-4">
+                        <span class="w-10 h-10 rounded-2xl bg-teal-600 text-white font-bold flex items-center justify-center text-sm shadow-md shadow-teal-600/10">2</span>
+                        <h3 class="text-lg font-bold text-slate-900 uppercase tracking-widest">Paso 2: Desarrolla tus 3 Objetivos</h3>
+                    </div>
+                    <p class="text-xs text-slate-500">Un objetivo debe ser concreto, medible, realista y delimitado en el tiempo. Utiliza los selectores para validar la norma SMART.</p>
+
+                    <!-- Objetivo 1 -->
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 shadow-inner">
+                        <label class="font-bold text-teal-700 block text-sm">Objetivo Estratégico Nº 1</label>
+                        <input id="inp-obj-1" type="text" placeholder="Ej: Incrementar la rentabilidad de la cooperativa en un 15% para diciembre de 2026..." class="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none text-slate-800 text-sm transition">
+                        <!-- Checklist SMART -->
+                        <div class="flex flex-wrap gap-5 text-[11px] font-semibold text-slate-500 pt-3 border-t border-slate-200/60">
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-1-s" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Específico (S)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-1-m" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Medible (M)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-1-a" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Realizable (A)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-1-r" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Relevante (R)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-1-t" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Tiempo (T)</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Objetivo 2 -->
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 shadow-inner">
+                        <label class="font-bold text-teal-700 block text-sm">Objetivo Estratégico Nº 2</label>
+                        <input id="inp-obj-2" type="text" placeholder="Ej: Lanzar tres nuevas líneas de productos saludables antes de la finalización..." class="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none text-slate-800 text-sm transition">
+                        <!-- Checklist SMART -->
+                        <div class="flex flex-wrap gap-5 text-[11px] font-semibold text-slate-500 pt-3 border-t border-slate-200/60">
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-2-s" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Específico (S)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-2-m" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Medible (M)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-2-a" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Realizable (A)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-2-r" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Relevante (R)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-2-t" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Tiempo (T)</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Objetivo 3 -->
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 shadow-inner">
+                        <label class="font-bold text-teal-700 block text-sm">Objetivo Estratégico Nº 3</label>
+                        <input id="inp-obj-3" type="text" placeholder="Ej: Capacitar al 100% de los operarios del área logística en normativas..." class="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none text-slate-800 text-sm transition">
+                        <!-- Checklist SMART -->
+                        <div class="flex flex-wrap gap-5 text-[11px] font-semibold text-slate-500 pt-3 border-t border-slate-200/60">
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-3-s" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Específico (S)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-3-m" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Medible (M)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-3-a" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Realizable (A)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-3-r" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Relevante (R)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="smart-3-t" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500"> <span>Tiempo (T)</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fase 3: Metas por Objetivo (9 Metas) -->
+                <div class="bg-white p-8 md:p-10 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+                    <div class="flex items-center space-x-4">
+                        <span class="w-10 h-10 rounded-2xl bg-teal-600 text-white font-bold flex items-center justify-center text-sm shadow-md shadow-teal-600/10">3</span>
+                        <h3 class="text-lg font-bold text-slate-900 uppercase tracking-widest">Paso 3: Desglosa tus 9 Metas</h3>
+                    </div>
+                    <p class="text-xs text-slate-500">Las Metas son la desagregación cuantitativa o hitos de cada uno de los objetivos planteados arriba.</p>
+
+                    <!-- Metas para Objetivo 1 -->
+                    <div class="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
+                        <span class="font-bold text-teal-700 text-xs uppercase block tracking-wider">Metas para Objetivo Nº 1</span>
+                        <input id="inp-meta-1-1" type="text" placeholder="Meta 1.1 (Ej: Lograr un incremento del 5% al cierre del primer trimestre)" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                        <input id="inp-meta-1-2" type="text" placeholder="Meta 1.2" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                        <input id="inp-meta-1-3" type="text" placeholder="Meta 1.3" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                    </div>
+
+                    <!-- Metas para Objetivo 2 -->
+                    <div class="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
+                        <span class="font-bold text-teal-700 text-xs uppercase block tracking-wider">Metas para Objetivo Nº 2</span>
+                        <input id="inp-meta-2-1" type="text" placeholder="Meta 2.1" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                        <input id="inp-meta-2-2" type="text" placeholder="Meta 2.2" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                        <input id="inp-meta-2-3" type="text" placeholder="Meta 2.3" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                    </div>
+
+                    <!-- Metas para Objetivo 3 -->
+                    <div class="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
+                        <span class="font-bold text-teal-700 text-xs uppercase block tracking-wider">Metas para Objetivo Nº 3</span>
+                        <input id="inp-meta-3-1" type="text" placeholder="Meta 3.1" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                        <input id="inp-meta-3-2" type="text" placeholder="Meta 3.2" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                        <input id="inp-meta-3-3" type="text" placeholder="Meta 3.3" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna de Previsualización y Descarga (1 Columna) -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="glass-card p-8 rounded-3xl sticky top-24 space-y-6 shadow-sm border-2 border-teal-500/10">
+                    <div class="text-center">
+                        <h4 class="font-bold text-slate-900 uppercase tracking-widest text-sm">Borrador del Plan</h4>
+                        <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Completa los campos de planificación para actualizar tu borrador académico.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button onclick="updatePreview()" class="w-full bg-gradient-to-r from-teal-600 to-amber-500 hover:from-teal-700 hover:to-amber-600 text-white font-bold py-3.5 px-4 rounded-xl transition text-sm shadow-md shadow-teal-600/10">
+                            Actualizar Vista Previa
+                        </button>
+                        <button onclick="downloadDraft()" class="w-full bg-white hover:bg-slate-50 text-slate-800 font-semibold py-3.5 px-4 rounded-xl transition text-sm border border-slate-200 shadow-sm">
+                            Descargar Borrador (.txt)
+                        </button>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-5">
+                        <span class="text-xs font-bold uppercase text-teal-700 tracking-wider block mb-2">Esquema de Cátedra:</span>
+                        <div id="preview-area" class="bg-slate-50 text-slate-700 p-5 rounded-2xl font-mono text-xs max-h-[300px] overflow-y-auto whitespace-pre-wrap border border-slate-200 shadow-inner">
+<!-- Preview content will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PESTAÑA: LEAN CANVAS INTERACTIVO (REESTRUCTURADA CON TEORÍA, MARCO Y AMPLIACIÓN) -->
+    <section id="sec-leancanvas" class="tab-content hidden space-y-12 animate-fadeIn">
+        
+        <!-- Bloque de Contextualización Teórica -->
+        <div class="glass-card p-10 md:p-14 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+            <div class="border-b border-slate-200 pb-5">
+                <span class="text-[10px] tracking-widest uppercase text-teal-600 font-bold bg-teal-50 px-2.5 py-1 rounded-md">Marco Metodológico de Negocios</span>
+                <h2 class="text-4xl font-bold text-slate-900 mt-2 font-serif">La Genealogía del Lean Canvas</h2>
+                <p class="text-slate-500 mt-1.5 leading-relaxed">Deconstrucción teórica y operacional del modelo de gestión ágil de Ash Maurya.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-10 items-start leading-relaxed text-slate-600 font-light text-base">
+                <div class="space-y-4">
+                    <p>
+                        El **Lean Canvas** es un lienzo estratégico de una sola página diseñado por el ingeniero y emprendedor **Ash Maurya** en el año 2010. Surge como una evolución crítica y ágil del tradicional *Business Model Canvas* de Alexander Osterwalder (2008). 
+                    </p>
+                    <p>
+                        Mientras que el modelo de Osterwalder está pensado para corporaciones consolidadas con un nivel de riesgo predecible, Maurya adaptó la herramienta específicamente para **Startups, emprendimientos en fase de diseño y proyectos bajo condiciones de extrema incertidumbre**.
+                    </p>
+                    <p>
+                        Sustentado epistemológicamente en la metodología **Lean Startup de Eric Ries** (cuyo principio fundamental es el circuito *Construir-Medir-Aprender*), el Lean Canvas reemplaza los bloques de infraestructura de Osterwalder (socios clave, actividades clave) por bloques enfocados en la resolución del conflicto inicial del negocio: **la validación de hipótesis del problema, la solución y la métrica de valor.**
+                    </p>
+                </div>
+                <div class="space-y-4 bg-teal-50/20 p-8 rounded-2xl border border-teal-100/50">
+                    <h4 class="font-bold text-slate-900 text-sm uppercase tracking-wider">El Orden del Estratega: Cómo se completa</h4>
+                    <p class="text-sm">
+                        Maurya insiste en que el lienzo no debe completarse de forma aleatoria, sino siguiendo un orden de tracción de mercado:
+                    </p>
+                    <ol class="list-decimal pl-5 space-y-2 text-xs font-semibold text-slate-700">
+                        <li><strong>Segmento de Clientes (Clientes y Early Adopters):</strong> ¿Quién tiene el problema?</li>
+                        <li><strong>Problema (Las 3 mermas críticas del usuario):</strong> ¿Qué dolor real vamos a solucionar?</li>
+                        <li><strong>Propuesta de Valor Única (PVU):</strong> ¿Por qué somos diferentes y por qué vale la pena prestarnos atención?</li>
+                        <li><strong>Solución:</strong> Las 3 características principales de nuestra propuesta.</li>
+                        <li><strong>Canales:</strong> El puente de distribución y comunicación.</li>
+                        <li><strong>Flujos de Ingreso:</strong> Cómo va a monetizarse el valor creado.</li>
+                        <li><strong>Estructura de Costos:</strong> Los egresos e inversiones requeridas para operar.</li>
+                        <li><strong>Métricas Clave:</strong> Qué mediremos para saber si estamos creciendo.</li>
+                        <li><strong>Ventaja Especial / Injusta:</strong> Lo que la competencia no puede copiar fácilmente.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Tutorial Integrado - CON ENLACE DE ALTA ESTABILIDAD Y CONTENEDOR FLUIDO -->
+        <div class="glass-card p-10 rounded-3xl border border-slate-100 shadow-sm space-y-5">
+            <h3 class="text-xl font-bold text-teal-700 uppercase tracking-widest font-serif">Tutorial Práctico de Formulación</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">Analiza este video tutorial en español que explica detalladamente el funcionamiento y la transposición de cada bloque del Lean Canvas en el mercado moderno.</p>
+            <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-inner border border-slate-200">
+                <!-- Enlace de alta estabilidad para YouTube Embed -->
+                <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/PvMCp3c7SIs" title="Tutorial Lean Canvas en Español" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- El Tablero Interactivo del Lean Canvas (El Taller de Formulación) -->
+        <div class="space-y-6">
+            <div class="text-center max-w-xl mx-auto py-5">
+                <h3 class="text-2xl font-bold text-slate-900 uppercase tracking-wider">Lienzo Interactivo Lean Canvas</h3>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">Completa los 9 cuadrantes metodológicos de tu modelo de negocio ágil. Sigue el orden numérico para una estructura coherente.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                
+                <!-- Bloque 1: Problema (Columna 1) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-teal-500 h-[300px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">1. Problema</h4>
+                            <span class="text-xs bg-teal-50 text-teal-700 font-bold px-2 py-0.5 rounded-full">#1</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Los 3 principales dolores o necesidades de tu mercado objetivo.</p>
+                    </div>
+                    <textarea id="lc-problema" placeholder="¿Qué problema real solucionas? Ej: Falta de acceso a alfajores sin azúcar en la montaña..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-500 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 4: Solución (Columna 2, Parte Superior) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-amber-500 h-[300px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">4. Solución</h4>
+                            <span class="text-xs bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded-full">#4</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Las 3 características clave de tu producto o servicio.</p>
+                    </div>
+                    <textarea id="lc-solucion" placeholder="¿Cómo lo resuelves? Ej: Distribución con camioneta climatizada y tienda online..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-amber-500 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 3: Propuesta de Valor Única (Columna 3) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-teal-600 h-[300px] md:scale-105 shadow-md shadow-teal-600/5 z-10">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-teal-700 uppercase tracking-wider">3. P.V.U.</h4>
+                            <span class="text-xs bg-teal-100 text-teal-800 font-bold px-2 py-0.5 rounded-full">#3</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Mensaje claro y sencillo de por qué eres diferente y vales la pena.</p>
+                    </div>
+                    <textarea id="lc-pvu" placeholder="Tu diferenciador. Ej: Dulzura premium sin culpa en cualquier lugar de Mendoza..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-teal-600 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 9: Ventaja Injusta (Columna 4, Parte Superior) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-amber-600 h-[300px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">9. Ventaja Especial</h4>
+                            <span class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">#9</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Algo que no se pueda copiar ni comprar fácilmente.</p>
+                    </div>
+                    <textarea id="lc-ventaja" placeholder="Ej: Receta de alfajor avalada por bromatología y marca registrada..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-amber-600 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 2: Segmento de Clientes (Columna 5) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-emerald-500 h-[300px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">2. Clientes</h4>
+                            <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full">#2</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Tu target e ideal. Identifica tus Early Adopters.</p>
+                    </div>
+                    <textarea id="lc-clientes" placeholder="¿Quién te compra? Ej: Turistas de paso y jóvenes aventureros mendocinos..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 8: Métricas Clave (Fila 2 - Columna 2, Parte Inferior) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-cyan-500 h-[240px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">8. Métricas Clave</h4>
+                            <span class="text-xs bg-cyan-50 text-cyan-700 font-bold px-2 py-0.5 rounded-full">#8</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Indicadores clave que miden la salud de tu negocio.</p>
+                    </div>
+                    <textarea id="lc-metricas" placeholder="Ej: Costo de adquisición, índice de recompra semanal..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-cyan-500 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 5: Canales (Fila 2 - Columna 4, Parte Inferior) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-rose-500 h-[240px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">5. Canales</h4>
+                            <span class="text-xs bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded-full">#5</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Tus vías de acceso a los clientes (marketing, distribución).</p>
+                    </div>
+                    <textarea id="lc-canales" placeholder="¿Cómo te conocen? Ej: Campañas de Instagram, redes locales de turismo..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-rose-500 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 7: Estructura de Costos (Fila 3, Ancho Doble) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-amber-600 h-[240px] md:col-span-2">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">7. Estructura de Costos</h4>
+                            <span class="text-xs bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded-full">#7</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Tus gastos fijos y variables para operar (servidores, salarios, insumos).</p>
+                    </div>
+                    <textarea id="lc-costos" placeholder="Tus egresos principales. Ej: Costo de materias primas, alquiler de planta en Blanco Encalada, logística en Mendoza..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-amber-600 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+                <!-- Bloque 6: Flujos de Ingreso (Fila 3, Ancho Doble) -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-4 border-indigo-500 h-[240px] md:col-span-1">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">6. Flujos de Ingreso</h4>
+                            <span class="text-xs bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full">#6</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">Fuentes de facturación (suscripción, venta directa).</p>
+                    </div>
+                    <textarea id="lc-ingresos" placeholder="Tus ingresos. Ej: Venta de alfajores al por mayor, combos turísticos, cafetería..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none transition shadow-inner"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Botones de Acción para Lean Canvas -->
+        <div class="flex flex-wrap gap-4 justify-end">
+            <button onclick="downloadLeanCanvas()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 px-8 rounded-2xl transition shadow-md hover:shadow-teal-600/10">Descargar Lean Canvas (.txt)</button>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 5: MÉTRICAS Y VISUALIZACIONES -->
+    <section id="sec-metricas" class="tab-content hidden space-y-12 animate-fadeIn">
+        <div class="border-b border-slate-200 pb-5">
+            <h2 class="text-4xl font-bold text-slate-900">Visualizaciones y Métricas</h2>
+            <p class="text-slate-500 mt-1">Instrumental para comprender el control de mermas y escalas de producción descritas en los marcos de estudio.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12">
+            <!-- Gráfico 1: Entre Dos -->
+            <div class="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                <h3 class="text-2xl font-serif text-teal-700 font-bold">Escala de Crecimiento: Caso Entre Dos</h3>
+                <p class="text-sm text-slate-500">Evolución de la producción anual de alfajores ($2008$ a proyección $2026$). Representación del paso de la escala barrial a la producción industrial.</p>
+                <div class="relative h-[300px]">
+                    <canvas id="canvas-entredos-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico 2: Control de Calidad -->
+            <div class="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm space-y-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-2xl font-serif text-teal-700 font-bold">Laboratorio de Calidad: Mermas</h3>
+                    <p class="text-sm text-slate-500">Mapeo del indicador de descarte de unidades óptimas vs descartadas. Fórmula de cálculo integrada en el marco de control.</p>
+                </div>
+                <div class="relative h-[220px]">
+                    <canvas id="canvas-quality-chart"></canvas>
+                </div>
+                <div class="p-5 bg-teal-50/30 rounded-2xl border border-teal-100/50 text-center text-sm font-serif text-teal-900 shadow-inner">
+                    $$\text{Indicador de Descarte (\%)} = \left( \frac{\text{Unidades Descartadas}}{\text{Total Producido}} \right) \times 100$$
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- PIE DE PÁGINA INSTITUCIONAL CON ESTILO EN BLANCO/ARENA -->
+<footer class="bg-slate-100 text-slate-600 py-16 px-8 mt-24 border-t border-slate-200/60 font-light">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 border-b border-slate-200 pb-10 mb-10 text-sm">
+        <div class="space-y-4">
+            <h4 class="text-teal-700 font-bold text-lg font-serif">Cátedra de Administración y Planificación</h4>
+            <p class="leading-relaxed">
+                Material interactivo diseñado para la formación técnica superior en administración de organizaciones. Diseñado de acuerdo a los estándares curriculares vigentes para la formación de analistas y gestores organizacionales.
+            </p>
+            <p class="text-xs">&copy; 2026 — Lic. Prof. Emanuel Italiano. Mendoza, Argentina.</p>
+        </div>
+        <div class="space-y-3 md:text-right">
+            <span class="text-teal-700 font-bold uppercase tracking-widest text-xs block mb-2">Ubicaciones y Fuentes Académicas</span>
+            <p>• Peter Drucker — The Practice of Management (1954)</p>
+            <p>• Thompson & Strickland — Administración Estratégica (2012)</p>
+            <p>• Casos Clínicos Regionales e Internacionales — Toyota, Apple & Entre Dos</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Sistema de navegación principal de la aplicación (SPA)
+    function switchTab(tabId) {
+        // Ocultar todos los bloques
+        document.querySelectorAll('.tab-content').forEach(block => {
+            block.classList.add('hidden');
+            block.classList.remove('block');
+        });
+        
+        // Desactivar todos los botones de navegación
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.classList.add('text-slate-500');
+        });
+
+        // Mostrar bloque actual
+        const targetSec = document.getElementById(`sec-${tabId}`);
+        if(targetSec) {
+            targetSec.classList.remove('hidden');
+            targetSec.classList.add('block');
+        }
+
+        // Activar botón actual
+        const targetBtn = document.getElementById(`nav-${tabId}`);
+        if(targetBtn) {
+            targetBtn.classList.add('active');
+            targetBtn.classList.remove('text-slate-500');
+        }
+
+        // Reiniciar gráficos si ingresa a la sección de métricas
+        if (tabId === 'metricas') {
+            initCharts();
+        }
+    }
+
+    // Scroll suave para los menús internos de la lectura
+    function scrollToId(elementId) {
+        const target = document.getElementById(elementId);
+        if(target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Sistema de navegación para los casos clínicos
+    function switchCaso(casoId) {
+        document.querySelectorAll('.caso-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+        document.querySelectorAll('.caso-tab-btn').forEach(btn => {
+            btn.classList.remove('active', 'border-indigo-500', 'text-teal-600');
+            btn.classList.add('border-transparent', 'text-slate-500');
+        });
+
+        document.getElementById(`caso-${casoId}`).classList.remove('hidden');
+        document.getElementById(`btn-c-${casoId}`).classList.add('active', 'border-indigo-500', 'text-teal-600');
+    }
+
+    // Sistema de actualización de la previsualización del borrador del Taller
+    function updatePreview() {
+        const vision = document.getElementById('inp-vision').value || '[Visión no definida aún]';
+        
+        const o1 = document.getElementById('inp-obj-1').value || '[Objetivo 1 no redactado]';
+        const o2 = document.getElementById('inp-obj-2').value || '[Objetivo 2 no redactado]';
+        const o3 = document.getElementById('inp-obj-3').value || '[Objetivo 3 no redactado]';
+
+        const m11 = document.getElementById('inp-meta-1-1').value || '[Meta 1.1 pendiente]';
+        const m12 = document.getElementById('inp-meta-1-2').value || '[Meta 1.2 pendiente]';
+        const m13 = document.getElementById('inp-meta-1-3').value || '[Meta 1.3 pendiente]';
+
+        const m21 = document.getElementById('inp-meta-2-1').value || '[Meta 2.1 pendiente]';
+        const m22 = document.getElementById('inp-meta-2-2').value || '[Meta 2.2 pendiente]';
+        const m23 = document.getElementById('inp-meta-2-3').value || '[Meta 2.3 pendiente]';
+
+        const m31 = document.getElementById('inp-meta-3-1').value || '[Meta 3.1 pendiente]';
+        const m32 = document.getElementById('inp-meta-3-2').value || '[Meta 3.2 pendiente]';
+        const m33 = document.getElementById('inp-meta-3-3').value || '[Meta 3.3 pendiente]';
+
+        const structure = `# PLANIFICACIÓN ESTRATÉGICA\n\n## 1. VISIÓN\n"${vision}"\n\n## 2. OBJETIVOS ESTRATÉGICOS Y METAS\n\n### Objetivo Estratégico 1:\n-> ${o1}\n   * Meta 1.1: ${m11}\n   * Meta 1.2: ${m12}\n   * Meta 1.3: ${m13}\n\n### Objetivo Estratégico 2:\n-> ${o2}\n   * Meta 2.1: ${m21}\n   * Meta 2.2: ${m22}\n   * Meta 2.3: ${m23}\n\n### Objetivo Estratégico 3:\n-> ${o3}\n   * Meta 3.1: ${m31}\n   * Meta 3.2: ${m32}\n   * Meta 3.3: ${m33}`;
+
+        document.getElementById('preview-area').textContent = structure;
+    }
+
+    // Descarga del borrador escrito por el estudiante en formato de texto plano (.txt)
+    function downloadDraft() {
+        updatePreview();
+        const content = document.getElementById('preview-area').textContent;
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'planificacion_borrador_catedra.txt';
+        link.click();
+    }
+
+    // Actualiza dinámicamente el código QR según el input ingresado
+    function updateQR() {
+        const inputUrl = document.getElementById('qr-url-input').value.trim();
+        const fallbackUrl = "https://emanuelitaliano.github.io/planificacion";
+        const targetUrl = inputUrl || fallbackUrl;
+        const qrImg = document.getElementById('qr-img');
+        
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(targetUrl)}`;
+    }
+
+    // Descarga la información del Lean Canvas en formato de texto plano estructurado
+    function downloadLeanCanvas() {
+        const prob = document.getElementById('lc-problema').value || 'Sin redactar';
+        const sol = document.getElementById('lc-solucion').value || 'Sin redactar';
+        const pvu = document.getElementById('lc-pvu').value || 'Sin redactar';
+        const ven = document.getElementById('lc-ventaja').value || 'Sin redactar';
+        const cli = document.getElementById('lc-clientes').value || 'Sin redactar';
+        const met = document.getElementById('lc-metricas').value || 'Sin redactar';
+        const can = document.getElementById('lc-canales').value || 'Sin redactar';
+        const cos = document.getElementById('lc-costos').value || 'Sin redactar';
+        const ing = document.getElementById('lc-ingresos').value || 'Sin redactar';
+
+        const output = `========================================================\n                 MODELO LEAN CANVAS\n========================================================\n\n1. PROBLEMA:\n${prob}\n\n2. SEGMENTO DE CLIENTES:\n${cli}\n\n3. PROPUESTA DE VALOR ÚNICA:\n${pvu}\n\n4. SOLUCIÓN:\n${sol}\n\n5. CANALES:\n${can}\n\n6. FLUJOS DE INGRESO:\n${ing}\n\n7. ESTRUCTURA DE COSTOS:\n${cos}\n\n8. MÉTRICAS CLAVE:\n${met}\n\n9. VENTAJA ESPECIAL / INJUSTA:\n${ven}\n\n--------------------------------------------------------\nBorrador generado en la Cátedra de Lic. Prof. Emanuel Italiano\n========================================================`;
+
+        const blob = new Blob([output], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'leancanvas_borrador_catedra.txt';
+        link.click();
+    }
+
+    // Inicialización y renderización de gráficos (Chart.js) con colores adaptados para modo claro
+    let chartsInitialized = false;
+    function initCharts() {
+        if(chartsInitialized) return; // Evitar reinicializar si ya existen
+
+        // Gráfico 1: Caso Entre Dos
+        const ctxED = document.getElementById('canvas-entredos-chart').getContext('2d');
+        new Chart(ctxED, {
+            type: 'bar',
+            data: {
+                labels: ['2008 (Origen Familiar)', '2015 (Fábrica Nueva)', '2026 (Proyección Actual)'],
+                datasets: [{
+                    label: 'Millones de Unidades Anuales',
+                    data: [0.01, 2.0, 14.0],
+                    backgroundColor: ['#0D9488', '#8B5CF6', '#D97706'],
+                    borderRadius: 12,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#475569' },
+                        grid: { color: '#E2E8F0' }
+                    },
+                    x: {
+                        ticks: { color: '#475569' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Gráfico 2: Control de Mermas
+        const ctxQ = document.getElementById('canvas-quality-chart').getContext('2d');
+        new Chart(ctxQ, {
+            type: 'doughnut',
+            data: {
+                labels: ['Unidades Óptimas', 'Descarte (Mermas / Fallas)'],
+                datasets: [{
+                    data: [98.2, 1.8],
+                    backgroundColor: ['#059669', '#CBD5E1'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 14, color: '#475569', font: { family: 'Outfit', size: 12 } }
+                    }
+                }
+            }
+        });
+
+        chartsInitialized = true;
+    }
+
+    // Al cargar la página
+    window.onload = () => {
+        switchTab('inicio');
+        updatePreview();
+    };
+</script>
+
+</body>
+</html>
