@@ -169,7 +169,7 @@
                 <p class="text-xs text-slate-500 mb-5 leading-relaxed">Escanea el código QR con tu celular para abrir este taller en tu pantalla al instante e interactuar de forma táctil.</p>
                 
                 <div class="bg-white p-4 rounded-2xl mb-5 shadow-sm border border-slate-100">
-                    <img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://emanuelitaliano.github.io/planificacion" alt="Código QR del Taller" class="w-28 h-28">
+                    <img id="qr-img" src="QR-EMA.png" alt="Código QR EMA" class="w-28 h-28">
                 </div>
 
                 <div class="w-full">
@@ -848,12 +848,9 @@
 
     // Actualiza dinámicamente el código QR según el input ingresado
     function updateQR() {
-        const inputUrl = document.getElementById('qr-url-input').value.trim();
-        const fallbackUrl = "https://emanuelitaliano.github.io/planificacion";
-        const targetUrl = inputUrl || fallbackUrl;
         const qrImg = document.getElementById('qr-img');
         
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(targetUrl)}`;
+        qrImg.src = 'QR-EMA.png';
     }
 
     // Descarga la información del Lean Canvas en formato de texto plano estructurado
